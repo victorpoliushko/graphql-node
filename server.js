@@ -7,6 +7,8 @@ var { ruruHTML } = require("ruru/server")
 var schema = buildSchema(`
   type Query {
     hello: String
+    quoteOfTheDay: String
+    rollDice(numDice: Int!, numSides: Int = 6): [Int]
   }
 `)
  
@@ -15,6 +17,16 @@ var root = {
   hello() {
     return "Hello world!"
   },
+  quoteOfTheDay() {
+    return Math.random() < 0.5 ? "Take it easy" : "Salvation lies within"
+  },
+  rollDice: ({ numDice, numSides }) => {
+    var output = []
+    for (var i = 0; i < numDice; i++) {
+      output.push(1 + Math.floor(Math.random() * (numSides || 6)))
+    }
+    return output
+  }
 }
  
 var app = express()
@@ -24,7 +36,7 @@ app.all(
   "/graphql",
   createHandler({
     schema: schema,
-    rootValue: root,
+    rootValue: root
   })
 )
 
