@@ -9,8 +9,77 @@ var schema = buildSchema(`
     hello: String
     quoteOfTheDay: String
     rollDice(numDice: Int!, numSides: Int = 6): [Int]
+    user(name: String): User
+    getDie(numSides: Int!): RandomDie
+    getMessage(id: ID!): Message
+    messages: [Message]
+  }
+
+  type User {
+    name: String
+    age: Int
+  }
+
+  type RandomDie {
+    roll(numRolls: Int!): [Int]
+    rollOnce: Int
+  }
+
+  input MessageInput {
+    content: String
+    author: String
+  }
+
+  type Mutation {
+    setMessage(message: String): String
+    createMessage(input: MessageInput): Message
+    updateMessage(id: ID!, input: MessageInput): Message
+  }
+
+  type Message {
+    id: ID!
+    content: String
+    author: String
   }
 `)
+
+class Message {
+  constructor(id, { content, author }) {
+    this.id = id
+    this.content = content
+    this.author = author
+  }
+}
+
+class RandomDie {
+  constructor(numSides) {
+    this.numSides = numSides
+  }
+ 
+  rollOnce() {
+    return 1 + Math.floor(Math.random() * this.numSides)
+  }
+ 
+  roll({ numRolls }) {
+    var output = []
+    for (var i = 0; i < numRolls; i++) {
+      output.push(this.rollOnce())
+    }
+    return output
+  }
+}
+
+class User {
+  constructor(name) {
+    this.name = name
+  }
+
+  age() {
+    return Math.floor(Math.random() * 60);
+  }
+}
+
+const fakeDatabase = {};
  
 // The root provides a resolver function for each API endpoint
 var root = {
@@ -26,9 +95,39 @@ var root = {
       output.push(1 + Math.floor(Math.random() * (numSides || 6)))
     }
     return output
+  },
+  user: (args) => new User(args.name),
+  getDie: ({ numSides }) => new RandomDie(numSides || 0),
+  setMessage: ({ message }) => {
+    fakeDatabase.message = message;
+    return message;
+  },
+  getMessage: ({ id }) => {
+    if (!fakeDatabase[id]) {
+      throw new Error("no message exists with id " + id)
+    }
+    return new Message(id, fakeDatabase[id])
+  },
+  createMessage({ input }) {
+    // Create a random id for our "database".
+    var id = require("crypto").randomBytes(10).toString("hex")
+ 
+    fakeDatabase[id] = input
+    return new Message(id, input)
+  },
+  updateMessage({ id, input }) {
+    if (!fakeDatabase[id]) {
+      throw new Error("no message exists with id " + id)
+    }
+    // This replaces all old data, but some apps might want partial update.
+    fakeDatabase[id] = input
+    return new Message(id, input)
+  },
+  messages() {
+    return Object.keys(fakeDatabase).map(key => new Message(key, fakeDatabase[key]));
   }
 }
- 
+
 var app = express()
  
 // Create and use the GraphQL handler.
