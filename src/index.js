@@ -1,12 +1,16 @@
-const fs = require('fs');
-const path = require('path');
-const { ApolloServer } = require('apollo-server');
-const { PrismaClient } = require("@prisma/client")
-const getUserId = require('./utils');
-const Query = require('./resolvers/Query')
-const Mutation = require('./resolvers/Mutation')
-const User = require('./resolvers/User')
-const Link = require('./resolvers/Link')
+import fs from 'fs';
+import path from 'path';
+import { ApolloServer } from 'apollo-server';
+import { PrismaClient } from "@prisma/client";
+import { feed as Query } from './resolvers/Query.js';
+import { Mutation } from './resolvers/Mutation.js';
+import { links as User } from './resolvers/User.js';
+import { postedBy as Link } from './resolvers/Link.js';
+import { getUserId } from './utils.js';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const resolvers = {
   Query,
@@ -37,4 +41,3 @@ server
   .then(({ url }) =>
     console.log(`Server is running on ${url}`)
   );
-

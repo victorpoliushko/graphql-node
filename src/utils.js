@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 
-const APP_SECRET = 'GraphQL-is-aw3some';
+export const APP_SECRET = 'GraphQL-is-aw3some';
 
-export function getTokenPayload(token) {
+function getTokenPayload(token) {
   return jwt.verify(token, APP_SECRET);
 }
 
@@ -14,12 +14,17 @@ export function getUserId(req, authToken) {
       if (!token) {
         throw new Error('No token found');
       }
-      const userId = getTokenPayload(token);
+      const { userId } = getTokenPayload(token);
+
+  console.log(`uid 1: ${userId}`);
       return userId;
     }
   } else if (authToken) {
-    const userId = getTokenPayload(authToken);
+    const { userId } = getTokenPayload(authToken);
+
+  console.log(`uid 2: ${userId}`);
     return userId;
   }
   throw new Error('Not authenticated');
 }
+

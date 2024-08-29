@@ -1,9 +1,9 @@
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const { APP_SECRET, getUserId } = require('../utils')
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { APP_SECRET } from '../utils.js';
 
 export async function signup(parent, args, context, info) {
-  const password = await bcrypt.hash(args.pawword, 10);
+  const password = await bcrypt.hash(args.password, 10);
 
   const user = await context.prisma.user.create({ data: {...args, password} });
 
@@ -45,3 +45,9 @@ export async function post(parent, args, context, info) {
     }
   });
 }
+
+export const Mutation = {
+  signup,
+  login,
+  post,
+};
