@@ -15,14 +15,10 @@ export function getUserId(req, authToken) {
         throw new Error('No token found');
       }
       const { userId } = getTokenPayload(token);
-
-  console.log(`uid 1: ${userId}`);
       return userId;
     }
   } else if (authToken) {
     const { userId } = getTokenPayload(authToken);
-
-  console.log(`uid 2: ${userId}`);
     return userId;
   }
   throw new Error('Not authenticated');

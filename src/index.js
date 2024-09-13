@@ -8,6 +8,10 @@ import { links as User } from './resolvers/User.js';
 import { postedBy as Link } from './resolvers/Link.js';
 import { getUserId } from './utils.js';
 import { fileURLToPath } from 'url';
+// import { PubSub } from 'apollo-server';
+// import { newLink as Subscription } from './resolvers/Subscription.js';
+
+// const pubsub = new PubSub()
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,6 +19,7 @@ const __dirname = path.dirname(__filename);
 const resolvers = {
   Query,
   Mutation,
+  // Subscription,
   User,
   Link
 }
@@ -31,6 +36,7 @@ const server = new ApolloServer({
     return {
       ...req,
       prisma,
+      // pubsub,
       userId: req && req.headers.authorization ? getUserId(req) : null
     };
   }

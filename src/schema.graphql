@@ -28,3 +28,7 @@ type User {
   name: String!
   links: [Link!]!
 }
+
+# type Subscription {
+#   newLink: Link
+# }
